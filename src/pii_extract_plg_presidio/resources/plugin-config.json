@@ -1,0 +1,49 @@
+{
+  "format": "piisa:config:pii-extract-plg-presidio:main:v1",
+  "nlp_config": {
+    "nlp_engine_name": "spacy",
+    "models": [
+      {"lang_code": "en", "model_name": "en_core_web_lg"},
+      {"lang_code": "es", "model_name": "es_core_news_md"}
+    ]
+  },
+  "pii_list": [
+    {
+      "type": "PERSON",
+      "lang": ["en", "es"],
+      "method": "model",
+      "extra": {"presidio": "PERSON"}
+    },
+    {
+      "type": "NORP",
+      "lang": ["en", "es"],
+      "method": "model",
+      "extra": {"presidio": "NRP"}
+    },
+    {
+      "type": "OTHER",
+      "subtype": "LOCATION",
+      "lang": ["en", "es"],
+      "method": "model",
+      "extra": {"presidio": "LOCATION"}
+    },
+    {
+      "type": "GOV_ID",
+      "subtype": "US passport",
+      "lang": "en",
+      "country": "us",
+      "method": "weak-regex,context",
+      "extra": {"presidio": "US_PASSPORT"}
+    },
+    {
+      "type": "GOV_ID",
+      "lang": "it",
+      "subtype": "Italian Codice Fiscale",
+      "country": "it",
+      "method": "regex,checksum,context",
+      "extra": {"presidio": "IT_FISCAL_CODE"}
+    }
+  ]
+}
+
+      
