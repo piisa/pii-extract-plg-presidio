@@ -1,0 +1,2 @@
+include requirements.txt
+include src/pii_extract_plg_presidio/resources/*.json
