@@ -25,7 +25,7 @@ The package neads
       - Spanish model: `python -m spacy download es_core_news_md`
  * For additional information on model specification, see [customizing NLP
    models]. If custom models are used, the `nlp_config` element in the plugin
-   [#configuration] must be adjusted accordingly.
+   [configuration](#configuration) must be adjusted accordingly.
 
 
 ## Usage
@@ -69,7 +69,7 @@ The provided [Makefile] can be used to process the package:
 
 [pii-data]: https://github.com/piisa/pii-data
 [pii-extract-base]: https://github.com/piisa/pii-extract-base
-[pii task descriptors]: https://github.com/piisa/pii-extract-base/doc/task-descriptor.md
+[pii task descriptors]: https://github.com/piisa/pii-extract-base/tree/main/doc/task-descriptor.md
 [Presidio]: https://microsoft.github.io/presidio/
 [presidio-analyzer]: https://microsoft.github.io/presidio/analyzer/
 [customizing NLP models]: https://microsoft.github.io/presidio/analyzer/customizing_nlp_models/
