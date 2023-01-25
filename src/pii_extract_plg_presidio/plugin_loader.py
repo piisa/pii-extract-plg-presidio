@@ -61,7 +61,7 @@ class PiiExtractPluginLoader:
 
 
     def __repr__(self) -> str:
-        return '<PiiExtractPluginLoader: presidio>'
+        return f'<PiiExtractPluginLoader: presidio {VERSION}>'
 
 
     def get_plugin_tasks(self, lang: str = None) -> Iterable[Dict]:

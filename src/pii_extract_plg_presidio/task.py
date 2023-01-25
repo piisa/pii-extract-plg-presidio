@@ -52,12 +52,12 @@ class PresidioTask(BaseMultiPiiTask):
                  cfg: Dict, log: PiiLogger, **kwargs):
         """
           :param task: the PII task info dict
-          :param pii: the list of PII entities to include
+          :param pii: the list of descriptors for the PII entities to include
           :param cfg: the plugin congiguration
           :param log: a logger object
         """
-        # Use the "extra" field to build the map of Presidio entities to
-        # PIISA entities (by language)
+        # Use the "extra" field in each PII descriptor to build the map of
+        # Presidio entities to PIISA entities (by language)
         self.ent_map = defaultdict(dict)
         if isinstance(pii, dict):
             pii = [pii]
@@ -72,7 +72,8 @@ class PresidioTask(BaseMultiPiiTask):
         # Decide is the default language (if we have a single one)
         all_lang = union_sets(taskd_field(t, "lang") for t in pii)
         self.lang = all_lang[0] if len(all_lang) == 1 else None
-        self._log(".. PresidioTask: lang=%s tasks=#%d", self.lang, len(pii), )
+        self._log(".. PresidioTask (%s): lang=%s tasks=#%d", VERSION,
+                  self.lang, len(pii))
 
         # Set up the Presidio Analyzer engine
         try:
