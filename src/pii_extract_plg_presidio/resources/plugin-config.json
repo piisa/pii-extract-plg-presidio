@@ -1,6 +1,7 @@
 {
   "format": "piisa:config:pii-extract-plg-presidio:main:v1",
   "nlp_config": {
+    "languages": ["en", "es"],
     "nlp_engine_name": "spacy",
     "models": [
       {"lang_code": "en", "model_name": "en_core_web_lg"},

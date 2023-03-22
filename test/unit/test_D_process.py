@@ -6,8 +6,11 @@ import pytest
 
 from pii_extract.build.collection import get_task_collection
 
+import pii_extract_plg_presidio.analyzer as anmod
+
 from taux.monkey_patch import patch_entry_points, patch_presidio_analyzer
 from taux.taskproc import process_tasks
+
 
 
 TESTCASES = [
@@ -42,8 +45,8 @@ def test20_detect(monkeypatch):
     Check detection
     """
     results = {t[0]: t[1] for t in TESTCASES}
-    patch_presidio_analyzer(monkeypatch, results)
     patch_entry_points(monkeypatch)
+    patch_presidio_analyzer(monkeypatch, results)
 
     piic = get_task_collection()
     tasks = piic.build_tasks("en")

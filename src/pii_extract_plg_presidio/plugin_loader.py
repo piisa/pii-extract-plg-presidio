@@ -4,7 +4,7 @@ The plugin entry point
 
 from pathlib import Path
 
-from typing import Dict, Iterable, Union
+from typing import Dict, Iterable, Union, List
 
 from pii_data.helper.exception import ConfigException
 from pii_data.helper.config import load_single_config
@@ -13,8 +13,8 @@ from pii_extract.build.collection.task_collection import ensure_enum
 from . import VERSION, defs
 from .task import PresidioTaskCollector
 
-
-CFG_ELEM = defs.CFG_MAP, defs.CFG_ENGINE, defs.CFG_PARAMS
+# Elements in the PIISA presidio config to read
+CFG_ELEM = defs.CFG_REUSE, defs.CFG_ENGINE, defs.CFG_PARAMS, defs.CFG_MAP
 
 
 def load_presidio_plugin_config(config: Union[Dict, str] = None) -> Dict:
@@ -50,14 +50,16 @@ class PiiExtractPluginLoader:
 
 
     def __init__(self, config: Union[str, Dict] = None, debug: bool = False,
-                 **kwargs):
+                 languages: List[str] = None, **kwargs):
         """
           :param config: either a configuration for the plugin, or a filename
             containing that configuration
           :param debug: activate debug mode
+          :param languages: languages to load in the Presidio analyzer engine
         """
         self.cfg = load_presidio_plugin_config(config)
-        self.obj = PresidioTaskCollector(self.cfg, debug=debug)
+        self.obj = PresidioTaskCollector(self.cfg, languages=languages,
+                                         debug=debug)
 
 
     def __repr__(self) -> str:

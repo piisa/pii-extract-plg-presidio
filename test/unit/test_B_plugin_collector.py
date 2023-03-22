@@ -41,7 +41,7 @@ def test20_task_obj(monkeypatch):
     tdef = t["obj"]
     assert tdef["class"] == "piitask"
     assert tdef["task"] == PresidioTask
-    assert sorted(tdef["kwargs"].keys()) == ["cfg", "log"]
+    assert sorted(tdef["kwargs"].keys()) == ["all_lang", "cfg", "log"]
 
 
 def test30_task_pii(monkeypatch):

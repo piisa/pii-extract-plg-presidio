@@ -6,7 +6,7 @@ import logging
 from operator import attrgetter
 from collections import defaultdict
 
-from pii_data.helper.exception import ProcException
+from pii_data.helper.exception import ProcException, ConfigException
 from pii_data.types import PiiEntity, PiiEntityInfo
 from pii_data.types.doc import DocumentChunk
 from pii_extract.build.task import BaseMultiPiiTask
@@ -27,8 +27,22 @@ def pii_list(config: Dict, lang: List[str]) -> Dict:
     Restrict the Presidio entity mapping to a given set of languages
     """
     langset = set([lang] if isinstance(lang, str) else lang) if lang else None
-    return [p for p in config[defs.CFG_MAP]
-            if not langset or taskd_field(p, "lang") & langset]
+    piimap = {}
+    for p in config[defs.CFG_MAP]:
+
+        key = f"{p['type']}/{p.get('subtype')}"
+        lang = p.get("lang")
+
+        # Remove entries with language defined as None
+        if lang is None:
+            piimap.pop(key, None)
+            continue
+        elif langset and not taskd_field(p, "lang") & langset:
+            continue    # skip if we've been given a precise set of languages
+
+        piimap[key] = p
+
+    return list(piimap.values())
 
 
 def einfo(p: Dict) -> PiiEntityInfo:
@@ -37,6 +51,9 @@ def einfo(p: Dict) -> PiiEntityInfo:
     """
     return PiiEntityInfo(p["pii"], p.get("lang"), p.get("country"),
                          p.get("subtype"))
+
+
+# ---------------------------------------------------------------------
 
 
 class PresidioTask(BaseMultiPiiTask):
@@ -48,21 +65,30 @@ class PresidioTask(BaseMultiPiiTask):
     pii_version = presidio_version
 
 
-    def __init__(self, task: Dict, pii: List[Dict],
-                 cfg: Dict, log: PiiLogger, **kwargs):
+    def __init__(self, task: Dict, pii: List[Dict], cfg: Dict,
+                 log: PiiLogger, all_lang: List[str] = None, **kwargs):
         """
           :param task: the PII task info dict
           :param pii: the list of descriptors for the PII entities to include
-          :param cfg: the plugin congiguration
+          :param cfg: the plugin configuration
           :param log: a logger object
+          :param all_lang: all languages the analyzer should be initialized for
         """
+
         # Use the "extra" field in each PII descriptor to build the map of
         # Presidio entities to PIISA entities (by language)
         self.ent_map = defaultdict(dict)
         if isinstance(pii, dict):
             pii = [pii]
         for p in pii:
-            self.ent_map[p["lang"]][p["extra"]["presidio"]] = einfo(p)
+            try:
+                langlist = p["lang"]
+                if isinstance(langlist, str):
+                    langlist = [langlist]
+                for lang in langlist:
+                    self.ent_map[lang][p["extra"]["presidio"]] = einfo(p)
+            except KeyError as e:
+                raise ConfigException("invalid Presidio config: missing field '{}' in: {}", e, p)
 
         # Now call the parent constructor
         super().__init__(task=task, pii=pii)
@@ -70,14 +96,15 @@ class PresidioTask(BaseMultiPiiTask):
         self._log = log
 
         # Decide is the default language (if we have a single one)
-        all_lang = union_sets(taskd_field(t, "lang") for t in pii)
+        if all_lang is None:
+            all_lang = union_sets(taskd_field(t, "lang") for t in pii)
         self.lang = all_lang[0] if len(all_lang) == 1 else None
         self._log(".. PresidioTask (%s): lang=%s tasks=#%d", VERSION,
-                  self.lang, len(pii))
+                  self.lang or all_lang, len(pii))
 
         # Set up the Presidio Analyzer engine
         try:
-            self.analyzer = presidio_analyzer(cfg, all_lang, log)
+            self.analyzer = presidio_analyzer(cfg, log)
         except Exception as e:
             raise ProcException("cannot create Presidio Analyzer engine: {}",
                                 e) from e
@@ -109,7 +136,7 @@ class PresidioTask(BaseMultiPiiTask):
         if lang is None:
             raise ProcException("Presidio task exception: no language defined in task or document chunk")
         elif lang not in self.ent_map:
-            raise ProcException("Presidio task exception: no tasks for lang {}",
+            raise ProcException("Presidio task exception: no tasks for lang: {}",
                                 lang)
 
         # Take the entity map for our language
@@ -142,10 +169,12 @@ class PresidioTaskCollector:
     The class used by the plugin loader to produce the Presidio task
     """
 
-    def __init__(self, cfg: Dict, debug: bool = True):
+    def __init__(self, cfg: Dict, languages: List[str] = None,
+                 debug: bool = True):
         self.cfg = cfg
+        self.lang = languages
         self._log = PiiLogger(__name__, debug)
-        self._log(".. Presidio task collector: init")
+        self._log(".. Presidio task collector: init (lang=%s)", languages)
 
 
     def gather_tasks(self, lang: str = None) -> Iterable[Dict]:
@@ -153,9 +182,11 @@ class PresidioTaskCollector:
         Return an iterable of available Detector tasks
         (in this case it is a single multi-task)
         """
-        self._log(".. Presidio gather tasks: lang=%s", lang)
+        if not lang:
+            lang = self.lang
+        self._log(".. Presidio gather tasks for lang=%s", lang)
 
-        # Configuration to add to the task descriptor
+        # The configuration to pass to to the task descriptor
         cfg = {k: self.cfg[k] for k in (defs.CFG_ENGINE, defs.CFG_PARAMS)}
 
         # Prepare the raw task descriptor
@@ -165,7 +196,7 @@ class PresidioTaskCollector:
             "version": VERSION,
             "doc": defs.TASK_DESCRIPTION,
             "task": PresidioTask,
-            "kwargs": {"cfg": cfg, "log": self._log},
-            "pii": pii_list(self.cfg, lang)
+            "kwargs": {"cfg": cfg, "log": self._log, "all_lang": self.lang},
+            "pii": pii_list(self.cfg, self.lang)
         }
         yield task
