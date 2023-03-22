@@ -77,11 +77,16 @@ def patch_presidio_analyzer(monkeypatch, results: Dict,
     monkeypatch.setattr(mod_an, 'NlpEngineProvider',
                         Mock(return_value=engine_provider))
 
-    # Patch AnalyzerEngine
+    # Create an instance of an analyzer engine mock
     mock_analyzer = AnalyzerEngineMock(results,
                                        entities=pres_entities or PRESIDIO_ENT,
                                        recognizers=pres_recognizers)
+
+    # Patch AnalyzerEngine class
     mock_class = Mock(return_value=mock_analyzer)
     monkeypatch.setattr(mod_an, 'AnalyzerEngine', mock_class)
 
-    return mock_analyzer
+    # Reset cache
+    monkeypatch.setattr(mod_an, 'ENGINE_CACHE', {})
+
+    return mock_class

@@ -1,8 +1,15 @@
 # Pii Extractor plugin: Presidio
 
+[![version](https://img.shields.io/pypi/v/pii-extract-plg-presidio)](https://pypi.org/project/pii-extract-plg-presidio)
+[![changelog](https://img.shields.io/badge/change-log-blue)](CHANGES.md)
+[![license](https://img.shields.io/pypi/l/pii-extract-plg-presidio)](LICENSE)
+[![build status](https://github.com/piisa/pii-extract-plg-presidio/actions/workflows/pii-extract-plg-presidio-pr.yml/badge.svg)](https://github.com/piisa/pii-extract-plg-presidio/actions)
+
 This repository builds a Python package that installs a [pii-extract-base]
 plugin to perform PII detection for text data using the Microsoft [Presidio]
 Python library.
+
+The name of the plugin entry point is `piisa-detectors-presidio`
 
 
 ## Requirements
@@ -44,8 +51,13 @@ and thus its functionality is exposed to it.
 The plugin is governed by a PIISA configuration file; there is one [default
 file] included in the package resources. The format tag for the configuration
 is `"piisa:config:extract-plg-presidio:main:v1`, and it has two sections:
- * `nlp_config` defines the NLP engine to be used, and the available models
-   (per language)
+ * `reuse_engine`: build the engine only once, and reuse it if another task
+   object is created (default is `True`)
+ * `nlp_config` defines Presidio initialization arguments
+     - `languages`: the languages to initialize Presidio with
+	 - `nlp_engine_name`: the NLP engine to be used
+	 - `models`: a list of NLP models to be loaded (each item contains 
+	    `lang_code` and `model_name`), and the available models
  * `pii_list` defines the PIISA instances to be detected. It contains a list
    of standard [pii task descriptors]; each one has an additional `extra`
    field that contains the Presidio PII entity to be mapped to the descriptor.

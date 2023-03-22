@@ -4,6 +4,7 @@ Test the plugin loader mechanics
 
 from pii_data.types import PiiEnum
 
+from pii_extract_plg_presidio import VERSION
 from pii_extract_plg_presidio.task import PresidioTask
 import pii_extract_plg_presidio.plugin_loader as mod
 
@@ -13,7 +14,7 @@ def test10_constructor():
     Test basic construction
     """
     ep = mod.PiiExtractPluginLoader()
-    assert str(ep) == '<PiiExtractPluginLoader: presidio>'
+    assert str(ep) == f'<PiiExtractPluginLoader: presidio {VERSION}>'
 
 
 def test20_tasklist():
