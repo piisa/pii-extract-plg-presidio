@@ -8,11 +8,11 @@ from unittest.mock import Mock
 
 from typing import List, Dict
 
-from pii_extract.gather.collector.defs import PII_EXTRACT_PLUGIN_ID
+from pii_extract.gather.collection.sources.defs import PII_EXTRACT_PLUGIN_ID
 from pii_extract_plg_presidio.plugin_loader import PiiExtractPluginLoader
 
-import pii_extract.gather.collector.plugin as mod1
-import pii_extract_plg_presidio.analyzer as mod_an
+import pii_extract.gather.collection.sources.plugin as mod1
+import pii_extract_plg_presidio.task.analyzer as mod_an
 
 
 # ---------------------------------------------------------------------
@@ -34,7 +34,8 @@ def patch_entry_points(monkeypatch):
 
 # ---------------------------------------------------------------------
 
-PRESIDIO_ENT = ["PERSON", "NRP", "LOCATION", "US_PASSPORT", "IT_FISCAL_CODE"]
+PRESIDIO_ENT = ["PERSON", "NRP", "LOCATION", "US_PASSPORT",
+                "US_DRIVER_LICENSE", "IT_FISCAL_CODE", "IT_IDENTITY_CARD"]
 
 
 @dataclass(order=True)

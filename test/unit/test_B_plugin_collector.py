@@ -2,11 +2,9 @@
 Test the list of collected tasks
 """
 
-import pytest
+from pii_extract.gather.collection import get_task_collection
 
-from pii_extract.build.collection import get_task_collection
-
-from pii_extract_plg_presidio.task import PresidioTask
+from pii_extract_plg_presidio.task.task import PresidioTask
 
 from taux.monkey_patch import patch_entry_points
 
@@ -41,7 +39,7 @@ def test20_task_obj(monkeypatch):
     tdef = t["obj"]
     assert tdef["class"] == "piitask"
     assert tdef["task"] == PresidioTask
-    assert sorted(tdef["kwargs"].keys()) == ["all_lang", "cfg", "log"]
+    assert sorted(tdef["kwargs"].keys()) == ["cfg", "log"]
 
 
 def test30_task_pii(monkeypatch):
@@ -52,14 +50,16 @@ def test30_task_pii(monkeypatch):
 
     tasks = _get_tasks()
     pii = tasks[0]["piid"]
-    assert len(pii) == 8
+    assert len(pii) == 13
 
     got_presidio_ent = [(p["extra"]["presidio"], p["lang"]) for p in pii]
     exp_presidio_ent = [
-        ("PERSON", "en"), ("PERSON", "es"),
-        ("NRP", "en"), ("NRP", "es"),
-        ("LOCATION", "en"), ("LOCATION", "es"),
+        ("PERSON", "en"), ("PERSON", "es"), ("PERSON", "it"),
+        ("NRP", "en"), ("NRP", "es"), ("NRP", "it"),
+        ("LOCATION", "en"), ("LOCATION", "es"), ("LOCATION", "it"),
         ("US_PASSPORT", "en"),
-        ("IT_FISCAL_CODE", "it")
+        ("US_DRIVER_LICENSE", "en"),
+        ("IT_FISCAL_CODE", "it"),
+        ("IT_IDENTITY_CARD", "it")
     ]
     assert exp_presidio_ent == got_presidio_ent

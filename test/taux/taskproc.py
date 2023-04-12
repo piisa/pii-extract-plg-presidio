@@ -10,8 +10,9 @@ from typing import Dict, List, Tuple, Iterable
 from pii_data.types import PiiEntity, PiiCollection
 from pii_data.types.doc import DocumentChunk
 from pii_extract.build.task import BasePiiTask
-from pii_extract.gather.parser import parse_task_descriptor, RawTaskDefaults
+from pii_extract.gather.parser import parse_task_descriptor
 from pii_extract.gather.parser.defs import TYPE_TASKD
+from pii_extract.gather.collection.sources.utils import RawTaskDefaults
 from pii_extract.build.build import build_task
 
 

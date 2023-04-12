@@ -19,7 +19,8 @@ from pii_extract.build.build import build_task
 
 from .. import VERSION
 from ..plugin_loader import load_presidio_plugin_config
-from ..task import presidio_version, presidio_analyzer, PresidioTaskCollector
+from ..analyzer import presidio_version, presidio_analyzer
+from ..task import PresidioTaskCollector
 
 
 class Processor:
@@ -32,7 +33,7 @@ class Processor:
     def _init_presidio(self):
         config = load_presidio_plugin_config(self.args.config)
         try:
-            return presidio_analyzer(config, self.args.lang)
+            return presidio_analyzer(config)
         except Exception as e:
             raise ProcException("cannot create Presidio Analyzer engine: {}",
                                 e) from e

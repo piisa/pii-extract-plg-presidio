@@ -8,7 +8,7 @@ from typing import Dict, Iterable, Union, List
 
 from pii_data.helper.exception import ConfigException
 from pii_data.helper.config import load_single_config
-from pii_extract.build.collection.task_collection import ensure_enum
+from pii_extract.gather.collection.utils import ensure_enum
 
 from . import VERSION, defs
 from .task import PresidioTaskCollector
@@ -55,7 +55,7 @@ class PiiExtractPluginLoader:
           :param config: either a configuration for the plugin, or a filename
             containing that configuration
           :param debug: activate debug mode
-          :param languages: languages to load in the Presidio analyzer engine
+          :param languages: restrict the Presidio config to those languages
         """
         self.cfg = load_presidio_plugin_config(config)
         self.obj = PresidioTaskCollector(self.cfg, languages=languages,

@@ -2,9 +2,7 @@
 Test building the Presidio task and using it for detection
 """
 
-import pytest
-
-from pii_extract.build.collection import get_task_collection
+from pii_extract.gather.collection import get_task_collection
 
 from taux.monkey_patch import patch_entry_points, patch_presidio_analyzer
 
@@ -22,7 +20,7 @@ def test10_tasklist(monkeypatch):
     tasks = piic.build_tasks()
     tasks = list(tasks)
     assert len(tasks) == 1
-    assert str(tasks[0]) == "<PresidioTask #8>"
+    assert str(tasks[0]) == "<PresidioTask #13>"
 
 
 def test11_tasklist_lang(monkeypatch):
@@ -36,7 +34,7 @@ def test11_tasklist_lang(monkeypatch):
     tasks = piic.build_tasks("en")
     tasks = list(tasks)
     assert len(tasks) == 1
-    assert str(tasks[0]) == "<PresidioTask #4>"
+    assert str(tasks[0]) == "<PresidioTask #5>"
 
 
 def test12_engine_cache(monkeypatch):
