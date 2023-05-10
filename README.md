@@ -25,14 +25,16 @@ The package neads
 
  * Install the package: `pip install pii-extract-plg-presidio` (it will
    automatically install its dependencies, including `presidio-analyzer`)
- * Download the recognition model for the desired language, as instructed by
-   the [presidio-analyzer] installation instructions. For instance, for
-   [spaCy models]:
+ * Download the recognition model for the desired language(s), as instructed by
+   the [presidio-analyzer] installation instructions. The default plugin
+   [configuration file] defines three [spaCy models]:
       - English model: `python -m spacy download en_core_web_lg`
       - Spanish model: `python -m spacy download es_core_news_md`
+      - Italian model: `python -m spacy download it_core_news_md`
  * For additional information on model specification, see [customizing NLP
-   models]. If custom models are used, the `nlp_config` element in the plugin
-   [configuration](#configuration) must be adjusted accordingly.
+   models] in the Presidio documentation. If custom models are used, the
+   `nlp_config` element in the plugin [configuration file] must be
+   adjusted accordingly.
 
 
 ## Usage
@@ -45,22 +47,18 @@ Instead, upon installation it defines a plugin entry point. This plugin is
 automatically picked up by executing scripts and classes in [pii-extract-base],
 and thus its functionality is exposed to it.
 
+Runtime behaviour is governed by a [configuration file], which sets up what
+recognizers from Presidio will be instantiated and used. Note that the
+configuration defines which languages are available for detection, but the
+plugin can also be initialized with a _subset_ of those languages.
 
-## Configuration
-
-The plugin is governed by a PIISA configuration file; there is one [default
-file] included in the package resources. The format tag for the configuration
-is `"piisa:config:extract-plg-presidio:main:v1`, and it has two sections:
- * `reuse_engine`: build the engine only once, and reuse it if another task
-   object is created (default is `True`)
- * `nlp_config` defines Presidio initialization arguments
-     - `languages`: the languages to initialize Presidio with
-	 - `nlp_engine_name`: the NLP engine to be used
-	 - `models`: a list of NLP models to be loaded (each item contains 
-	    `lang_code` and `model_name`), and the available models
- * `pii_list` defines the PIISA instances to be detected. It contains a list
-   of standard [pii task descriptors]; each one has an additional `extra`
-   field that contains the Presidio PII entity to be mapped to the descriptor.
+The task created from the plugin is a standard [PII task] object, using the
+`pii_extract.build.task.MultiPiiTask` class definition. It will be called,
+as all PII task objects, with a `DocumentChunk` object containing the data to
+analyze. The chunk **must** contain language specification in its metadata, so
+that Presidio knows which language to use (unless the plugin task has been
+built with *only one* language; in that case if the chunk does not contain
+a language specification, it will use that single language).
 
 
 ## Building
@@ -89,3 +87,5 @@ The provided [Makefile] can be used to process the package:
 [Makefile]: Makefile
 [pytest]: https://docs.pytest.org
 [default file]: src/pii_extract_plg_presidio/resources/plugin-config.json
+[configuration file]: doc/configuration.md
+[PII task]: https://github.com/piisa/pii-extract-base/blob/main/doc/task-implementation.md

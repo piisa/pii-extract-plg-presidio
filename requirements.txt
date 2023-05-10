@@ -1,7 +1,4 @@
-python-stdnum >=1.17,<2.0
-regex >= 2021.11.10
+presidio_analyzer >= 2.2.32
 
-presidio_analyzer >= 2.2.30
-
-pii-data >= 0.3.2, <1.0.0
-pii-extract-base >= 0.3.1, <1.0.0
+pii-data >= 0.4.0, <1.0.0
+pii-extract-base >= 0.4.0, <1.0.0

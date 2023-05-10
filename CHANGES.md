@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v. 0.3.0
+ * fixed info script
+ * fixed default config file (added "it")
+ * added recognizers: US Driver License, Italian identity card
+ * fixed dataflow for the initialization of languages & models
+ * reworked language management for plugin & task
+ * updated documentation
+
 ## v. 0.2.0
  * Add `languages` config parameter
  * Accept overall language definition (a) in config (b) as a plugin argument

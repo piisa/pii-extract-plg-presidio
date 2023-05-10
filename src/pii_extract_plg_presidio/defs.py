@@ -2,9 +2,10 @@
 # Name of PIISA configuration section
 FMT_CONFIG = "pii-extract-plg-presidio:main:v1"
 
-# Elements in plugin configuration
-CFG_REUSE = "reuse_engine"
+# Block in configuration containing the NLP settings
 CFG_ENGINE = "nlp_config"
+# Elements in NLP settings
+CFG_REUSE = "reuse_engine"
 CFG_PARAMS = "analyzer_params"
 CFG_MAP = "pii_list"
 

@@ -1,30 +1,30 @@
 {
   "format": "piisa:config:pii-extract-plg-presidio:main:v1",
   "nlp_config": {
-    "languages": ["en", "es"],
     "nlp_engine_name": "spacy",
     "models": [
       {"lang_code": "en", "model_name": "en_core_web_lg"},
-      {"lang_code": "es", "model_name": "es_core_news_md"}
+      {"lang_code": "es", "model_name": "es_core_news_md"},
+      {"lang_code": "it", "model_name": "it_core_news_md"}
     ]
   },
   "pii_list": [
     {
       "type": "PERSON",
-      "lang": ["en", "es"],
+      "lang": ["en", "es", "it"],
       "method": "model",
       "extra": {"presidio": "PERSON"}
     },
     {
       "type": "NORP",
-      "lang": ["en", "es"],
+      "lang": ["en", "es", "it"],
       "method": "model",
       "extra": {"presidio": "NRP"}
     },
     {
-      "type": "OTHER",
-      "subtype": "LOCATION",
-      "lang": ["en", "es"],
+      "type": "LOCATION",
+      "subtype": "place",
+      "lang": ["en", "es", "it"],
       "method": "model",
       "extra": {"presidio": "LOCATION"}
     },
@@ -38,11 +38,27 @@
     },
     {
       "type": "GOV_ID",
+      "subtype": "US Driver License",
+      "lang": "en",
+      "country": "us",
+      "method": "weak-regex,context",
+      "extra": {"presidio": "US_DRIVER_LICENSE"}
+    },
+    {
+      "type": "GOV_ID",
       "lang": "it",
       "subtype": "Italian Codice Fiscale",
       "country": "it",
       "method": "regex,checksum,context",
       "extra": {"presidio": "IT_FISCAL_CODE"}
+    },
+    {
+      "type": "GOV_ID",
+      "lang": "it",
+      "subtype": "Italian identity card",
+      "country": "it",
+      "method": "weak-regex,context",
+      "extra": {"presidio": "IT_IDENTITY_CARD"}
     }
   ]
 }
