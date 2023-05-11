@@ -83,7 +83,7 @@ class PresidioTaskCollector:
             "version": VERSION,
             "doc": defs.TASK_DESCRIPTION,
             "task": PresidioTask,
-            "kwargs": {"cfg": cfg, "log": self._log},
+            "kwargs": {"cfg": cfg, "log": self._log, "model_lang": task_lang},
             "pii": pii_list(self.cfg, task_lang)
         }
         yield task
