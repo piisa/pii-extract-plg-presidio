@@ -3,7 +3,7 @@ Create a Presidio analyzer engine
 """
 
 
-from typing import Dict
+from typing import Dict, Iterable
 
 from pii_extract.helper.logger import PiiLogger
 
@@ -18,18 +18,22 @@ from .utils import presidio_languages
 ENGINE_CACHE = {}
 
 
-def presidio_analyzer(config: Dict,
+def presidio_analyzer(config: Dict, languages: Iterable[str] = None,
                       logger: PiiLogger = None) -> AnalyzerEngine:
     """
     Create a Presidio AnalyzerEngine object.
     Will reuse an object with the same configuration if it's in the cache
     and `reuse_engine` is True (which is its default value)
     """
-    # Fetch NLP engine configuration. Keep only the language models we'll use
+    # Fetch NLP engine configuration
     langset = presidio_languages(config)
+    #print("ANALYZER", langset, "&", languages, config)
+    if languages:
+        langset = langset.intersection(languages)
     config = config.get(defs.CFG_ENGINE)
 
     # Prepare a configuration for the Presidio Analyzer
+    # Keep only the language models we'll use
     nlp_config = {
         "nlp_engine_name": config.get("nlp_engine_name"),
         "models": [m for m in config.get("models")

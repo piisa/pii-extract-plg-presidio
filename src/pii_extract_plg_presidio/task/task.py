@@ -42,14 +42,15 @@ class PresidioTask(BaseMultiPiiTask):
 
 
     def __init__(self, task: Dict, pii: List[Dict], cfg: Dict,
-                 log: PiiLogger, **kwargs):
+                 model_lang: Iterable[str], log: PiiLogger, **kwargs):
         """
           :param task: the PII task info dict
           :param pii: the list of descriptors for the PII entities to include
           :param cfg: the plugin configuration
+          :param model_lang: languages to instantiate models for
           :param log: a logger object
         """
-        #print("\nPresidioTask INIT", pii)
+        #print("\nPresidioTask INIT", model_lang, pii)
 
         # Use the "extra" field in the PII dict to build a map (by language)
         # of Presidio entities to PIISA entities
@@ -72,13 +73,14 @@ class PresidioTask(BaseMultiPiiTask):
         self._log = log
 
         # Decide a default language for this task (possible if we have only one)
-        self.lang = pii_lang.pop() if len(pii_lang) == 1 else None
+        self.lang = next(iter(pii_lang)) if len(pii_lang) == 1 else None
         self._log(".. PresidioTask (%s): lang=%s tasks=#%d", VERSION,
                   self.lang, len(pii))
 
         # Set up the Presidio Analyzer engine
         try:
-            self.analyzer = presidio_analyzer(cfg, log)
+            self.analyzer = presidio_analyzer(cfg, languages=model_lang,
+                                              logger=self._log)
         except Exception as e:
             raise ProcException("cannot create Presidio Analyzer engine: {}",
                                 e) from e

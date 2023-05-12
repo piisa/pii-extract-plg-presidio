@@ -50,13 +50,14 @@ class PiiExtractPluginLoader:
 
 
     def __init__(self, config: Union[str, Dict] = None, debug: bool = False,
-                 languages: List[str] = None, **kwargs):
+                 languages: Iterable[str] = None, **kwargs):
         """
           :param config: either a configuration for the plugin, or a filename
             containing that configuration
           :param debug: activate debug mode
           :param languages: restrict the Presidio config to those languages
         """
+        #print("PRESIDIO LOADER", languages)
         self.cfg = load_presidio_plugin_config(config)
         self.obj = PresidioTaskCollector(self.cfg, languages=languages,
                                          debug=debug)

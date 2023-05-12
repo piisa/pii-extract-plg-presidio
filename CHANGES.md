@@ -1,5 +1,9 @@
 # ChangeLog
 
+## v. 0.3.1
+ * plugin_loader accepts the languages argument
+ * if instantiatied with a specific set of languages, remove models not in the set
+
 ## v. 0.3.0
  * fixed info script
  * fixed default config file (added "it")
