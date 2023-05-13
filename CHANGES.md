@@ -1,5 +1,8 @@
 # ChangeLog
 
+## v. 0.3.2
+ * fix: info script fixed
+
 ## v. 0.3.1
  * plugin_loader accepts the languages argument
  * if instantiatied with a specific set of languages, remove models not in the set
