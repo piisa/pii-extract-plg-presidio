@@ -1,5 +1,5 @@
 """
-A collector for the presidio detection task
+A collector for the Presidio detection task
 """
 
 from pii_extract.helper.utils import taskd_field

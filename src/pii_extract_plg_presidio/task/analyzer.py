@@ -23,7 +23,10 @@ def presidio_analyzer(config: Dict, languages: Iterable[str] = None,
     """
     Create a Presidio AnalyzerEngine object.
     Will reuse an object with the same configuration if it's in the cache
-    and `reuse_engine` is True (which is its default value)
+    and `reuse_engine` in the config is True (which is its default value)
+     :param config: the presidion config
+     :param languages: restrict languages in the analyzer
+     :param logger: a logger instance
     """
     # Fetch NLP engine configuration
     langset = presidio_languages(config)

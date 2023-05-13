@@ -40,17 +40,15 @@ The package neads
 ## Usage
 
 The package does not have any user-facing entry points (except for one console
-script `pii-extract-presidio-info`, which provides information about its
-capabilities).
+information script, see [below](#info-script)). Instead, upon installation it
+defines a plugin entry point. This plugin is automatically picked up by the
+scripts and classes in [pii-extract-base], and thus its functionality is exposed
+to them.
 
-Instead, upon installation it defines a plugin entry point. This plugin is
-automatically picked up by executing scripts and classes in [pii-extract-base],
-and thus its functionality is exposed to it.
-
-Runtime behaviour is governed by a [configuration file], which sets up what
-recognizers from Presidio will be instantiated and used. Note that the
+Runtime behaviour is governed by a [configuration file], which sets up which
+recognizers from Presidio will be instantiated and used (note that the
 configuration defines which languages are available for detection, but the
-plugin can also be initialized with a _subset_ of those languages.
+plugin can also be initialized with a _subset_ of those languages).
 
 The task created from the plugin is a standard [PII task] object, using the
 `pii_extract.build.task.MultiPiiTask` class definition. It will be called,
@@ -59,6 +57,18 @@ analyze. The chunk **must** contain language specification in its metadata, so
 that Presidio knows which language to use (unless the plugin task has been
 built with *only one* language; in that case if the chunk does not contain
 a language specification, it will use that single language).
+
+
+## info script
+
+`pii-extract-presidio-info` is a command-line script  which provides
+information about the plugin capabilities: 
+  * `version`: installed package versions
+  * `presidio-recognizers`: list of recognizers in Presidio
+  * `presidio-entities`: the total list of entities Presidio can generate
+  * `pii-entities`: the PIISA tasks that this plugin will create, by translating
+	from the entities detected by Presidio (this depends on the PIISA config
+	used)
 
 
 ## Building

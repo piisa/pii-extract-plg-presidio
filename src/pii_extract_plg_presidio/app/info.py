@@ -13,13 +13,15 @@ from presidio_analyzer import RemoteRecognizer, PatternRecognizer
 from pii_data import VERSION as VERSION_DATA
 from pii_data.helper.exception import ProcException
 from pii_extract import VERSION as VERSION_EXTRACT
-from pii_extract.gather.parser import parse_task_descriptor, RawTaskDefaults
-from pii_extract.build.collection.task_collection import filter_piid
+from pii_extract.gather.parser import parse_task_descriptor
+from pii_extract.gather.collection.sources.utils import RawTaskDefaults
+from pii_extract.gather.collection.task_collection import filter_piid
 from pii_extract.build.build import build_task
 
 from .. import VERSION
 from ..plugin_loader import load_presidio_plugin_config
-from ..analyzer import presidio_version, presidio_analyzer
+from ..task.analyzer import presidio_analyzer
+from ..task.utils import presidio_version
 from ..task import PresidioTaskCollector
 
 
@@ -31,9 +33,12 @@ class Processor:
 
 
     def _init_presidio(self):
+        """
+        Initialize the Presidio recognizer object
+        """
         config = load_presidio_plugin_config(self.args.config)
         try:
-            return presidio_analyzer(config)
+            return presidio_analyzer(config, languages=self.args.lang)
         except Exception as e:
             raise ProcException("cannot create Presidio Analyzer engine: {}",
                                 e) from e
@@ -87,7 +92,8 @@ class Processor:
         config = load_presidio_plugin_config(self.args.config)
 
         # Get the Presidio task descriptor
-        tc = PresidioTaskCollector(config, debug=self.debug)
+        tc = PresidioTaskCollector(config, languages=self.args.lang,
+                                   debug=self.debug)
         raw_tdesc = tc.gather_tasks()
 
         # Ensure it is normalized
@@ -124,7 +130,6 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     c1.add_argument("--config", nargs="+",
                     help="add PIISA configuration file(s)")
     c1.add_argument("--lang", nargs='+', help="language to select")
-    c1.add_argument("--country", nargs="+", help="countries to select")
 
     opt_com2 = argparse.ArgumentParser(add_help=False)
     c1 = opt_com2.add_argument_group('Task selection options')
@@ -137,9 +142,8 @@ def parse_args(args: List[str]) -> argparse.Namespace:
 
     subp = parser.add_subparsers(help='command', dest='cmd')
 
-    subp0 = subp.add_parser('version',
-                            help='version information',
-                            parents=[opt_com1, opt_com3])
+    subp.add_parser('version', help='show version information for components',
+                    parents=[opt_com1, opt_com3])
 
     subp1 = subp.add_parser('presidio-recognizers',
                             help='information about recognizers available in presidio',
