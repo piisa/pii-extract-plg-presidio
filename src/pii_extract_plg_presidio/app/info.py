@@ -12,6 +12,7 @@ from presidio_analyzer import RemoteRecognizer, PatternRecognizer
 
 from pii_data import VERSION as VERSION_DATA
 from pii_data.helper.exception import ProcException
+from pii_data.helper.logger import PiiLogger
 from pii_extract import VERSION as VERSION_EXTRACT
 from pii_extract.gather.parser import parse_task_descriptor
 from pii_extract.gather.collection.sources.utils import RawTaskDefaults
@@ -30,15 +31,19 @@ class Processor:
     def __init__(self, args: argparse.Namespace, debug: bool = False):
         self.args = args
         self.debug = debug
+        self.log = PiiLogger(__name__, debug=True) if debug else None
 
 
     def _init_presidio(self):
         """
         Initialize the Presidio recognizer object
         """
+        #print("*** INIT")
         config = load_presidio_plugin_config(self.args.config)
+        #print("*** CONFIG", config)
         try:
-            return presidio_analyzer(config, languages=self.args.lang)
+            return presidio_analyzer(config, languages=self.args.lang,
+                                     logger=self.log)
         except Exception as e:
             raise ProcException("cannot create Presidio Analyzer engine: {}",
                                 e) from e
@@ -123,7 +128,7 @@ class Processor:
 
 def parse_args(args: List[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description=f"Show information about usable PII tasks (version {VERSION})")
+        description=f"Show information about the plugin (version {VERSION})")
 
     opt_com1 = argparse.ArgumentParser(add_help=False)
     c1 = opt_com1.add_argument_group('Configuration options')

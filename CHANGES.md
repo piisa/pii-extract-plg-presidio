@@ -1,5 +1,8 @@
 # ChangeLog
 
+## v. 0.3.3
+ * fix: improvements when using Transformers models
+
 ## v. 0.3.2
  * fix: info script fixed
 

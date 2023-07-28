@@ -16,8 +16,7 @@ from pii_extract.helper.logger import PiiLogger
 from typing import Iterable, Dict, List
 
 from .. import VERSION
-from .utils import presidio_version
-from .analyzer import presidio_analyzer
+from .utils import hf_cachedir
 
 
 
@@ -38,7 +37,7 @@ class PresidioTask(BaseMultiPiiTask):
     """
     pii_source = "microsoft:presidio"
     pii_name = "Presidio wrapper"
-    pii_version = presidio_version
+    pii_version = VERSION
 
 
     def __init__(self, task: Dict, pii: List[Dict], cfg: Dict,
@@ -66,7 +65,7 @@ class PresidioTask(BaseMultiPiiTask):
                 for lang in langset:
                     self._ent_map[lang][p["extra"]["presidio"]] = einfo(p)
             except KeyError as e:
-                raise ConfigException("invalid Presidio config: missing field '{}' in: {}", e, p)
+                raise ConfigException("invalid Presidio config: missing field '{}' in: {}", e, p) from e
 
         # Initialize
         super().__init__(task=task, pii=pii)
@@ -77,8 +76,14 @@ class PresidioTask(BaseMultiPiiTask):
         self._log(".. PresidioTask (%s): lang=%s tasks=#%d", VERSION,
                   self.lang, len(pii))
 
+        # Define cache directory for HuggingFace, just in case we use Transformers
+        cachedir = cfg.get("cachedir")
+        if cachedir is not False:
+            hf_cachedir(cachedir)
+
         # Set up the Presidio Analyzer engine
         try:
+            from .analyzer import presidio_analyzer
             self.analyzer = presidio_analyzer(cfg, languages=model_lang,
                                               logger=self._log)
         except Exception as e:
@@ -117,6 +122,7 @@ class PresidioTask(BaseMultiPiiTask):
 
         # Take the entity map for our language
         entity_map = self._ent_map[lang]
+        #print("LANG", lang, "DATA", chunk.data, entity_map)
 
         # Call Presidio analyzer to get results
         try:

@@ -24,8 +24,8 @@ def presidio_analyzer(config: Dict, languages: Iterable[str] = None,
     Create a Presidio AnalyzerEngine object.
     Will reuse an object with the same configuration if it's in the cache
     and `reuse_engine` in the config is True (which is its default value)
-     :param config: the presidion config
-     :param languages: restrict languages in the analyzer
+     :param config: the plugin config
+     :param languages: restrict languages loaded in the analyzer to this list
      :param logger: a logger instance
     """
     # Fetch NLP engine configuration
@@ -43,6 +43,7 @@ def presidio_analyzer(config: Dict, languages: Iterable[str] = None,
                    if not langset or m["lang_code"] in langset]
     }
 
+    #print("CONFIG", nlp_config)
     if logger:
         logger(".. Presidio NLP engine: %s", nlp_config.get("nlp_engine_name"))
         logger(".. Presidio NLP models: %s", nlp_config.get("models"))
@@ -51,10 +52,11 @@ def presidio_analyzer(config: Dict, languages: Iterable[str] = None,
     reuse = config.get(defs.CFG_REUSE, True)
     if reuse:
         key_l = "-".join(sorted(langset)) if langset else "-"
-        key_m = (m["lang_code"] + ":" + m["model_name"]
+        key_m = (m["lang_code"] + ":" + str(m["model_name"])
                  for m in nlp_config["models"])
         key = [key_l, nlp_config['nlp_engine_name'], '-'.join(sorted(key_m))]
         key = '/'.join(key)
+        #print("KEY", key)
         engine = ENGINE_CACHE.get(key)
         if key in ENGINE_CACHE:
             if logger:
