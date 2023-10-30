@@ -41,7 +41,7 @@ to create this list the following requirements must be met:
    `nlp_config` section (which in turn requires the model to be available in
    the system)
    
-Not that the requirement for a model for the language to be available holds
+Note that the requirement for a model for the language to be available holds
 even if the PII task instance does not actually use the model (e.g. also for a
 regexp detector); this is a Presidio requirement. For this reason, as explained
 above, PII descriptors whose defined language is not included in the `models`

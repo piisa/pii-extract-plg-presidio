@@ -37,8 +37,14 @@ def long_description():
     """
     with open("README.md", "rt", encoding="utf-8") as f:
         desc = f.read()
-        desc = re.sub(r"^\[ ([^\]]+) \]: \s+ \S.*\n", r"", desc, flags=re.X | re.M)
-        return re.sub(r"\[ ([^\]]+) \]", r"\1", desc, flags=re.X)
+        # action icons
+        desc = re.sub(r"^ \[ ! \[ [^\]]+ \] \( [^\)]+ \) \] \( [^\)]+ \)\n", "",
+                      desc, flags=re.X | re.M)
+        # References
+        desc = re.sub(r"^\[ [^\]]+ \]: \s+ \S.*\n", "", desc, flags=re.X | re.M)
+        # Links
+        return re.sub(r"\[ ([^\]]+) \] (?: \( [^\)]+ \) )?", r"\1", desc,
+                      flags=re.X)
 
 
 # --------------------------------------------------------------------
